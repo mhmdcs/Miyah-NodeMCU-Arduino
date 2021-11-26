@@ -22,9 +22,15 @@ const int echoPin = D6;
 int firstVal;
  long duration;  
  int distance;  
+ int water_level_PD [4];
+int pd_temp = 0;
+int pd_avg = 0;
+int hour = 0;
+int water_level_PW [7];
 int temp = 0;
-int water_level_PH [360];
+int water_level_PH [4];
 int waterLeve_perHoure = 0;
+int x = water_level_PD[4];
 int sizeofArray = (sizeof(water_level_PH) / sizeof(water_level_PH[0]));
 
 void setup() { //setup method only runs code once
@@ -52,7 +58,7 @@ pinMode(16, OUTPUT);
 
   //begin the  firebase connection
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  Firebase.setInt("users/PNuq0TbdEHOCsgWN8h1fsuDXUwo1/espDistance", 0);
+  Firebase.setInt("users/OXLxTluUlyW4POVaE0womwErvhD3/espDistance", 0);
 }//end of setup method
 
 
@@ -66,6 +72,10 @@ void loop() {//loop method is where the main code logic that's going to be repea
 //calculates the distance, source https://simple-circuit.com/arduino-hc-sr04-sensor-distance-meter/
 
 
+
+
+
+water_level_PD [4] = {0};
 
 
 
@@ -88,7 +98,7 @@ duration = pulseIn(echoPin, HIGH);
 //prints the distance on the Ardunio IDE's serial monitor 
 Serial.print("Distance: ");
 Serial.println(distance);
-Firebase.setInt("users/PNuq0TbdEHOCsgWN8h1fsuDXUwo1/espDistance",distance);
+Firebase.setInt("users/OXLxTluUlyW4POVaE0womwErvhD3/espDistance",distance);
     water_level_PH[i] = distance;
     Serial.print("Current index: ");
     Serial.print(i);
@@ -117,5 +127,5 @@ Firebase.setInt("users/PNuq0TbdEHOCsgWN8h1fsuDXUwo1/espDistance",distance);
         waterLeve_perHoure  = temp/(sizeofArray+1);
         Serial.print("Average: ");
        Serial.println(waterLeve_perHoure);
-       
-      }
+       Firebase.setInt("users/OXLxTluUlyW4POVaE0womwErvhD3/avgPH",waterLeve_perHoure);
+}
