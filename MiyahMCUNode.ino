@@ -36,6 +36,9 @@ int ph_temp = 0;
 int water_level_PH [4];
 int ph_avg = 0;
 
+int ph_sizeofArray = (sizeof(water_level_PH) / sizeof(water_level_PH[0]));
+
+
 
 void setup() { //setup method only runs code once
 
