@@ -13,7 +13,6 @@
 
 
 //define pins for the ultrasonic sensor (trig and echo pins), and the variables for the water level calculations and data
-
 const int trigPin = D5;
 const int echoPin = D6;
 long duration;  
@@ -21,19 +20,19 @@ int distance;
 
 
 //variables for calculating hourly, weekly and monthly water consumption statistics 
-int water_level_PD [4];
+int water_level_PD [4]; //24
 int pd_temp = 0;
 int pd_avg = 0;
 int pd_sizeofArray = (sizeof(water_level_PD) / sizeof(water_level_PD[0]));
 
-int water_level_PW [4];
+int water_level_PW [4]; //7
 int pw_temp = 0;
 int pw_avg = 0;
 int pw_sizeofArray = (sizeof(water_level_PW) / sizeof(water_level_PW[0]));
 int pw_check = 0;
 
 int ph_temp = 0;
-int water_level_PH [4];
+int water_level_PH [4]; //1800
 int ph_avg = 0;
 
 int ph_sizeofArray = (sizeof(water_level_PH) / sizeof(water_level_PH[0]));
@@ -65,7 +64,7 @@ pinMode(16, OUTPUT); //pin 16 is used to wake up the ESP8266 from deep sleep htt
 
   //begin the  firebase connection
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  Firebase.setInt("users/TEZLRyoqtwUuJHgRx4IhBWzFbC42/espDistance", 0);
+  Firebase.setInt("users/OXLxTluUlyW4POVaE0womwErvhD3/espDistance", 0);
   
 }//end of setup method
 
@@ -103,7 +102,7 @@ Firebase.setInt("users/OXLxTluUlyW4POVaE0womwErvhD3/espDistance",distance);
     Serial.print(i);
             Serial.print(", Index value: " );
        Serial.println(water_level_PH[i]);
-       delay(10000);
+       delay(2000); //water level distance delay
 
            }
 
