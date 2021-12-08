@@ -1,9 +1,8 @@
-//importing all the necessary libraries, the ESP8266 MCU node wifi support library, the software serial, and the firebase implementation libraries
-//to establish the connection between the ESP8266 and the Firebase database
-#include <ESP8266WiFi.h> //to upload code on ESP8266 and use Wifi.Begin to connect the ESP8266 to wifi network
-#include <SoftwareSerial.h> //to display serial for ESP8266
-#include <FirebaseArduino.h> //to use .Firebase.setInt and Firebase.begin methods
-#include <FirebaseHttpClient.h> //to connect to the most recent firebase website fingerprint
+//importing all the necessary libraries, the ESP8266 MCU node wifi support library, the software serial, and the firebase implementation libraries to establish the connection between the ESP8266 and the Firebase database
+#include <ESP8266WiFi.h>
+#include <SoftwareSerial.h>
+#include <FirebaseArduino.h>
+#include <FirebaseHttpClient.h>
 
 //set up firebase connection variables with link of the firebase databse  for FIREBASE_HOST and secret key authorization for FIREBASE_AUTH
 #define FIREBASE_HOST "miyah-application-default-rtdb.firebaseio.com"
@@ -44,8 +43,8 @@ void setup() { //setup method only runs code once
 
   //establish a wirelesss connection between the MCUNode ESP8266 to the wifi network
 
-  pinMode(trigPin, OUTPUT); //define trigger pin as an output because it's transmitter 
-  pinMode(echoPin, INPUT); //define echo pin as an input because it's reciever 
+  pinMode(trigPin, OUTPUT); //define trigger pin as output
+  pinMode(echoPin, INPUT); //define echo pin as input
     Serial.begin(9600);
 
   //source for setting up the firebase-arduino connection https://www.instructables.com/Firebase-Integrate-With-ESP8266/
@@ -54,7 +53,7 @@ void setup() { //setup method only runs code once
 pinMode(16, OUTPUT); //pin 16 is used to wake up the ESP8266 from deep sleep https://user-images.githubusercontent.com/53692075/111992062-00578880-8b3b-11eb-9eab-59f927277be4.png // https://randomnerdtutorials.com/esp8266-deep-sleep-with-arduino-ide/#:~:text=GPIO%2016%20must%20be%20connected,pin%20receives%20a%20LOW%20signal.   
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("connecting");
-  while(WiFi.status() != WL_CONNECTED) //refer to Arduino documentation https://www.arduino.cc/en/Reference/WiFiStatus
+  while(WiFi.status() != WL_CONNECTED)
   {
     Serial.print(".");
     delay(500);
@@ -65,9 +64,7 @@ pinMode(16, OUTPUT); //pin 16 is used to wake up the ESP8266 from deep sleep htt
 
   //begin the  firebase connection
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  //TuczpVT8m2O1PgPPnmMtM3YoWvs1 user ibrahim@ibrahim.com (blue green jump wires NodeMCU)
-  //TEZLRyoqtwUuJHgRx4IhBWzFbC42 user ahmed@ahmed.com (red yellow jump wires NodeMCU)
-  Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance", 0);
+  Firebase.setInt("users/TuczpVT8m2O1PgPPnmMtM3YoWvs1/espDistance", 0);
   
 }//end of setup method
 
@@ -82,29 +79,32 @@ void loop() {//loop method is where the main code logic that's going to be repea
 for (int i = 0; i < (sizeof(water_level_PH) / sizeof(water_level_PH[0])); i++){
 
 //clear the trigPin
-digitalWrite(trigPin, LOW); //set trig to low first to ensure it always starts as low
-delayMicroseconds(2); //change any low number
+digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
 
-//set the trigPin on HIGH state for 10µs (microseconds unit) send signle to trigger and start MCU through pulsing high and low 
+//set the trigPin on HIGH state for 10µs (microseconds unit)
 digitalWrite(trigPin, HIGH);
-delayMicroseconds(10); //this is a constant rule to delay 10 microseconds
+delayMicroseconds(10);
 digitalWrite(trigPin, LOW);
 
-duration = pulseIn(echoPin, HIGH); //for how long echo remains as high and return microseconds duration
+//reads the echoPin and then returns the sound wave frequencies travel-time in microseconds 
+duration = pulseIn(echoPin, HIGH);
 
-//calculates the distance, source  https://www.thegeekpub.com/235425/arduino-ultrasonic-sensor-tutorial/  &&  https://simple-circuit.com/arduino-hc-sr04-sensor-distance-meter/ && https://www.youtube.com/watch?v=pwWk20du8qA&ab_channel=ArafaMicrosys&loop=0
-distance= duration*0.034/2;
-//Divide by 2 to split the roundtrip distance between recieving and transmitting.
-//340 based on averege speed of sound based on current humidity, air preassure temparature.
-//Multiplty speed by 0.0001 to convert from meter/second centimeter/microsecond, result is 0.034
+//calculates the distance, source  https://www.thegeekpub.com/235425/arduino-ultrasonic-sensor-tutorial/  &&  https://simple-circuit.com/arduino-hc-sr04-sensor-distance-meter/
+distance= duration*0.034/2;  
 
 //prints the distance on the Ardunio IDE's serial monitor 
 Serial.print("Distance: ");
 Serial.println(distance);
-Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance",distance);
+Firebase.setInt("users/TuczpVT8m2O1PgPPnmMtM3YoWvs1/espDistance",distance);
+    water_level_PH[i] = distance;
+    Serial.print("Current index: ");
+    Serial.print(i);
+            Serial.print(", Index value: " );
+       Serial.println(water_level_PH[i]);
+       delay(2000); //water level distance delay
 
-
-
+           }
 
 
 
@@ -114,18 +114,6 @@ Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance",distance);
 
 
     //to calculate the average
-
-
-
-
-    water_level_PH[i] = distance;
-    Serial.print("Current index: ");
-    Serial.print(i);
-            Serial.print(", Index value: " );
-       Serial.println(water_level_PH[i]);
-       delay(2000); //water level distance delay
-
-           }
     
      
     
@@ -143,7 +131,7 @@ Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance",distance);
         ph_avg  = ph_temp/(ph_sizeofArray);
         Serial.print("Average: ");
        Serial.println(ph_avg);
-       Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/avgPH",ph_avg);
+       Firebase.setInt("users/TuczpVT8m2O1PgPPnmMtM3YoWvs1/avgPH",ph_avg);
        ph_temp = 0;
 
        for(int i = 0; i < (pd_sizeofArray) ; i++){
@@ -178,7 +166,7 @@ Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance",distance);
         }
       Serial.print("Day avg= ");
        Serial.println(pd_avg);
-       Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/avgPD",pd_avg);
+       Firebase.setInt("users/TuczpVT8m2O1PgPPnmMtM3YoWvs1/avgPD",pd_avg);
        pd_temp = 0;
    
         for(int j = 0; j < (pd_sizeofArray); j++){
@@ -217,7 +205,7 @@ Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance",distance);
         }
       Serial.print("Week avg= ");
        Serial.println(pw_avg);
-       Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/avgPW",pw_avg);
+       Firebase.setInt("users/TuczpVT8m2O1PgPPnmMtM3YoWvs1/avgPW",pw_avg);
        pw_temp = 0;
         for(int j = 0; j < (pw_sizeofArray); j++){
          water_level_PW [j] = 0;
@@ -225,9 +213,6 @@ Firebase.setInt("users/T7R7dXGwH2SWIpnQbTNfRmi2PDh2/espDistance",distance);
           }
 
         }
-
-
-
 
 
 
